@@ -75,7 +75,6 @@ DEFINE VS2017_HOST        = x86
 DEFINE VS2017_BIN_HOST    = DEF(VS2017_BIN)\HostDEF(VS2017_HOST)\DEF(VS2017_HOST)
 DEFINE VS2017_BIN_IA32    = DEF(VS2017_BIN)\HostDEF(VS2017_HOST)\x86
 DEFINE VS2017_BIN_X64     = DEF(VS2017_BIN)\HostDEF(VS2017_HOST)\x64
-DEFINE VS2017_BIN_ARM     = DEF(VS2017_BIN)\HostDEF(VS2017_HOST)\arm
 
 #
 # Resource compiler
@@ -339,9 +338,6 @@ DEFINE DTC_BIN                 = ENV(DTC_PREFIX)dtc
 #                             Required to build platforms or ACPI tables:
 #                               Intel(r) ACPI Compiler (iasl.exe) from
 #                               https://acpica.org/downloads
-#                        Note:
-#                             Building of XIP firmware images for ARM is not currently supported (only applications).
-#                             /FILEALIGN:4096 and other changes are needed for ARM firmware builds.
 #   DDK3790     -win32-  Requires:
 #                             Microsoft Windows Server 2003 Driver Development Kit (Microsoft WINDDK) version 3790.1830
 #                        Optional:
@@ -718,20 +714,6 @@ DEFINE DTC_BIN                 = ENV(DTC_PREFIX)dtc
 #                             Required to build platforms or ACPI tables:
 #                               Microsoft ASL ACPI Compiler (asl.exe) v4.0.0 from
 #                               http://download.microsoft.com/download/2/c/1/2c16c7e0-96c1-40f5-81fc-3e4bf7b65496/microsoft_asl_compiler-v4-0-0.msi
-#   RVCT        -win-   Requires:
-#                             ARM C/C++ Compiler, 5.00
-#                        Optional:
-#                             Required to build EBC drivers:
-#                               Intel(r) Compiler for Efi Byte Code (Intel(r) EBC Compiler)
-#                             Required to build platforms or ACPI tables:
-#                               Microsoft ASL ACPI Compiler (asl.exe) v4.0.0 from
-#                               http://download.microsoft.com/download/2/c/1/2c16c7e0-96c1-40f5-81fc-3e4bf7b65496/microsoft_asl_compiler-v4-0-0.msi
-#   RVCTLINUX   -unix-   Requires:
-#                             ARM C/C++ Compiler, 5.00
-#                        Optional:
-#                             Required to build platforms or ACPI tables:
-#                               Intel(r) ACPI Compiler from
-#                               https://acpica.org/downloads
 # * Commented out - All versions of VS2005 use the same standard install directory
 #
 ####################################################################################
@@ -742,7 +724,6 @@ DEFINE DTC_BIN                 = ENV(DTC_PREFIX)dtc
 #   MSFT           - Microsoft
 #   GCC            - GNU GCC
 #   INTEL          - INTEL
-#   RVCT           - ARM RealView Toolchain
 ####################################################################################
 ####################################################################################
 #
@@ -4176,33 +4157,6 @@ NOOPT_VS2017_X64_NASM_FLAGS     = -O0 -f win64 -g
 RELEASE_VS2017_X64_DLINK_FLAGS  = /NOLOGO /NODEFAULTLIB /IGNORE:4001 /IGNORE:4254 /OPT:REF /OPT:ICF=10 /MAP /ALIGN:32 /SECTION:.xdata,D /SECTION:.pdata,D /Machine:X64 /LTCG /DLL /ENTRY:$(IMAGE_ENTRY_POINT) /SUBSYSTEM:EFI_BOOT_SERVICE_DRIVER /SAFESEH:NO /BASE:0 /DRIVER /MERGE:.rdata=.data
 NOOPT_VS2017_X64_DLINK_FLAGS    = /NOLOGO /NODEFAULTLIB /IGNORE:4001 /OPT:REF /OPT:ICF=10 /MAP /ALIGN:32 /SECTION:.xdata,D /SECTION:.pdata,D /Machine:X64 /LTCG /DLL /ENTRY:$(IMAGE_ENTRY_POINT) /SUBSYSTEM:EFI_BOOT_SERVICE_DRIVER /SAFESEH:NO /BASE:0 /DRIVER /DEBUG
 
-#################
-# ARM definitions
-#################
-*_VS2017_ARM_CC_PATH              = DEF(VS2017_BIN_ARM)\cl.exe
-*_VS2017_ARM_VFRPP_PATH           = DEF(VS2017_BIN_ARM)\cl.exe
-*_VS2017_ARM_SLINK_PATH           = DEF(VS2017_BIN_ARM)\lib.exe
-*_VS2017_ARM_DLINK_PATH           = DEF(VS2017_BIN_ARM)\link.exe
-*_VS2017_ARM_APP_PATH             = DEF(VS2017_BIN_ARM)\cl.exe
-*_VS2017_ARM_PP_PATH              = DEF(VS2017_BIN_ARM)\cl.exe
-*_VS2017_ARM_ASM_PATH             = DEF(VS2017_BIN_ARM)\armasm.exe
-*_VS2017_ARM_ASLCC_PATH           = DEF(VS2017_BIN_ARM)\cl.exe
-*_VS2017_ARM_ASLPP_PATH           = DEF(VS2017_BIN_ARM)\cl.exe
-*_VS2017_ARM_ASLDLINK_PATH        = DEF(VS2017_BIN_ARM)\link.exe
-
-      *_VS2017_ARM_MAKE_FLAGS     = /nologo
-  DEBUG_VS2017_ARM_CC_FLAGS       = /nologo /c /WX /GS- /W4 /Gs32768 /D UNICODE /O1b2 /GL /FIAutoGen.h /EHs-c- /GR- /GF /Gy /Zi /Gm /Gw /Oi-
-RELEASE_VS2017_ARM_CC_FLAGS       = /nologo /c /WX /GS- /W4 /Gs32768 /D UNICODE /O1b2 /GL /FIAutoGen.h /EHs-c- /GR- /GF /Gw /Oi-
-NOOPT_VS2017_ARM_CC_FLAGS         = /nologo /c /WX /GS- /W4 /Gs32768 /D UNICODE /FIAutoGen.h /EHs-c- /GR- /GF /Gy /Zi /Gm /Od /Oi-
-
-  DEBUG_VS2017_ARM_ASM_FLAGS      = /nologo /g
-RELEASE_VS2017_ARM_ASM_FLAGS      = /nologo
-NOOPT_VS2017_ARM_ASM_FLAGS        = /nologo
-
-  DEBUG_VS2017_ARM_DLINK_FLAGS    = /NOLOGO /NODEFAULTLIB /IGNORE:4001 /OPT:REF /OPT:ICF=10 /MAP /SECTION:.xdata,D /SECTION:.pdata,D /MACHINE:ARM /LTCG /DLL /ENTRY:$(IMAGE_ENTRY_POINT) /SUBSYSTEM:EFI_BOOT_SERVICE_DRIVER /SAFESEH:NO /BASE:0 /DRIVER /DEBUG
-RELEASE_VS2017_ARM_DLINK_FLAGS    = /NOLOGO /NODEFAULTLIB /IGNORE:4001 /IGNORE:4254 /OPT:REF /OPT:ICF=10 /MAP /SECTION:.xdata,D /SECTION:.pdata,D /MACHINE:ARM /LTCG /DLL /ENTRY:$(IMAGE_ENTRY_POINT) /SUBSYSTEM:EFI_BOOT_SERVICE_DRIVER /SAFESEH:NO /BASE:0 /DRIVER /MERGE:.rdata=.data
-NOOPT_VS2017_ARM_DLINK_FLAGS      = /NOLOGO /NODEFAULTLIB /IGNORE:4001 /OPT:REF /OPT:ICF=10 /MAP /SECTION:.xdata,D /SECTION:.pdata,D /MACHINE:ARM /LTCG /DLL /ENTRY:$(IMAGE_ENTRY_POINT) /SUBSYSTEM:EFI_BOOT_SERVICE_DRIVER /SAFESEH:NO /BASE:0 /DRIVER /DEBUG
-
 ##################
 # EBC definitions
 ##################
@@ -4510,20 +4464,14 @@ DEFINE GCC_ALL_CC_FLAGS            = -g -Os -fshort-wchar -fno-builtin -fno-stri
 DEFINE GCC_IA32_CC_FLAGS           = DEF(GCC_ALL_CC_FLAGS) -m32 -malign-double -freorder-blocks -freorder-blocks-and-partition -O2 -mno-stack-arg-probe
 DEFINE GCC_X64_CC_FLAGS            = DEF(GCC_ALL_CC_FLAGS) -mno-red-zone -Wno-address -mno-stack-arg-probe
 DEFINE GCC_IPF_CC_FLAGS            = DEF(GCC_ALL_CC_FLAGS) -minline-int-divide-min-latency
-DEFINE GCC_ARM_CC_FLAGS            = DEF(GCC_ALL_CC_FLAGS) -mlittle-endian -mabi=aapcs -fno-short-enums -funsigned-char -ffunction-sections -fdata-sections -fomit-frame-pointer -Wno-address -mthumb -mfloat-abi=soft -fno-pic -fno-pie
-DEFINE GCC_ARM_CC_XIPFLAGS         = -mno-unaligned-access
 DEFINE GCC_AARCH64_CC_FLAGS        = DEF(GCC_ALL_CC_FLAGS) -mlittle-endian -fno-short-enums -fverbose-asm -funsigned-char  -ffunction-sections -fdata-sections -Wno-address -fno-asynchronous-unwind-tables -fno-unwind-tables -fno-pic -fno-pie -ffixed-x18
 DEFINE GCC_AARCH64_CC_XIPFLAGS     = -mstrict-align -mgeneral-regs-only
 DEFINE GCC_DLINK_FLAGS_COMMON      = -nostdlib --pie
 DEFINE GCC_DLINK2_FLAGS_COMMON     = -Wl,--script=$(EDK_TOOLS_PATH)/Scripts/GccBase.lds
 DEFINE GCC_IA32_X64_DLINK_COMMON   = DEF(GCC_DLINK_FLAGS_COMMON) --gc-sections
-DEFINE GCC_ARM_AARCH64_DLINK_COMMON= -Wl,--emit-relocs -nostdlib -Wl,--gc-sections -u $(IMAGE_ENTRY_POINT) -Wl,-e,$(IMAGE_ENTRY_POINT),-Map,$(DEST_DIR_DEBUG)/$(BASE_NAME).map
-DEFINE GCC_ARM_DLINK_FLAGS         = DEF(GCC_ARM_AARCH64_DLINK_COMMON) -z common-page-size=0x20 -Wl,--pic-veneer
-DEFINE GCC_AARCH64_DLINK_FLAGS     = DEF(GCC_ARM_AARCH64_DLINK_COMMON) -z common-page-size=0x20
-DEFINE GCC_ARM_AARCH64_ASLDLINK_FLAGS = -Wl,--defsym=PECOFF_HEADER_SIZE=0 DEF(GCC_DLINK2_FLAGS_COMMON) -z common-page-size=0x20
+DEFINE GCC_AARCH64_DLINK_FLAGS     = -Wl,--emit-relocs -nostdlib -Wl,--gc-sections -u $(IMAGE_ENTRY_POINT) -Wl,-e,$(IMAGE_ENTRY_POINT),-Map,$(DEST_DIR_DEBUG)/$(BASE_NAME).map -z common-page-size=0x20
 DEFINE GCC_IA32_X64_ASLDLINK_FLAGS = DEF(GCC_IA32_X64_DLINK_COMMON) --entry _ReferenceAcpiTable -u $(IMAGE_ENTRY_POINT)
-DEFINE GCC_ARM_ASLDLINK_FLAGS      = DEF(GCC_ARM_DLINK_FLAGS) -Wl,--entry,ReferenceAcpiTable -u $(IMAGE_ENTRY_POINT) DEF(GCC_ARM_AARCH64_ASLDLINK_FLAGS)
-DEFINE GCC_AARCH64_ASLDLINK_FLAGS  = DEF(GCC_AARCH64_DLINK_FLAGS) -Wl,--entry,ReferenceAcpiTable -u $(IMAGE_ENTRY_POINT) DEF(GCC_ARM_AARCH64_ASLDLINK_FLAGS)
+DEFINE GCC_AARCH64_ASLDLINK_FLAGS  = DEF(GCC_AARCH64_DLINK_FLAGS) -Wl,--entry,ReferenceAcpiTable -u $(IMAGE_ENTRY_POINT) -Wl,--defsym=PECOFF_HEADER_SIZE=0 DEF(GCC_DLINK2_FLAGS_COMMON) -z common-page-size=0x20
 DEFINE GCC_IA32_X64_DLINK_FLAGS    = DEF(GCC_IA32_X64_DLINK_COMMON) --entry _$(IMAGE_ENTRY_POINT) --file-alignment 0x20 --section-alignment 0x20 -Map $(DEST_DIR_DEBUG)/$(BASE_NAME).map
 DEFINE GCC_IPF_DLINK_FLAGS         = -nostdlib -O2 --gc-sections --dll -static --entry $(IMAGE_ENTRY_POINT) --undefined $(IMAGE_ENTRY_POINT) -Map $(DEST_DIR_DEBUG)/$(BASE_NAME).map
 DEFINE GCC_IPF_OBJCOPY_FLAGS       = -I elf64-ia64-little -O efi-bsdrv-ia64
@@ -4538,7 +4486,6 @@ DEFINE GCC_DTCPP_FLAGS             = -E -x assembler-with-cpp -imacros AutoGen.h
 DEFINE GCC_IA32_RC_FLAGS           = -I binary -O elf32-i386          -B i386    --rename-section .data=.hii
 DEFINE GCC_X64_RC_FLAGS            = -I binary -O elf64-x86-64        -B i386    --rename-section .data=.hii
 DEFINE GCC_IPF_RC_FLAGS            = -I binary -O elf64-ia64-little   -B ia64    --rename-section .data=.hii
-DEFINE GCC_ARM_RC_FLAGS            = -I binary -O elf32-littlearm     -B arm     --rename-section .data=.hii
 DEFINE GCC_AARCH64_RC_FLAGS        = -I binary -O elf64-littleaarch64 -B aarch64 --rename-section .data=.hii
 DEFINE GCC_RISCV64_RC_FLAGS        = -I binary -O elf64-littleriscv   -B riscv   --rename-section .data=.hii
 
@@ -4555,17 +4502,11 @@ DEFINE GCC48_IA32_DLINK2_FLAGS       = -Wl,--defsym=PECOFF_HEADER_SIZE=0x220 DEF
 DEFINE GCC48_X64_DLINK_FLAGS         = DEF(GCC48_IA32_X64_DLINK_FLAGS) -Wl,-melf_x86_64,--oformat=elf64-x86-64,-pie
 DEFINE GCC48_X64_DLINK2_FLAGS        = -Wl,--defsym=PECOFF_HEADER_SIZE=0x228 DEF(GCC_DLINK2_FLAGS_COMMON)
 DEFINE GCC48_ASM_FLAGS               = DEF(GCC_ASM_FLAGS)
-DEFINE GCC48_ARM_ASM_FLAGS           = $(ARCHASM_FLAGS) $(PLATFORM_FLAGS) DEF(GCC_ASM_FLAGS) -mlittle-endian
 DEFINE GCC48_AARCH64_ASM_FLAGS       = $(ARCHASM_FLAGS) $(PLATFORM_FLAGS) DEF(GCC_ASM_FLAGS) -mlittle-endian
-DEFINE GCC48_ARM_CC_FLAGS            = $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) DEF(GCC_ARM_CC_FLAGS) -fstack-protector -mword-relocations
-DEFINE GCC48_ARM_CC_XIPFLAGS         = DEF(GCC_ARM_CC_XIPFLAGS)
 DEFINE GCC48_AARCH64_CC_FLAGS        = $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) -mcmodel=large DEF(GCC_AARCH64_CC_FLAGS)
 DEFINE GCC48_AARCH64_CC_XIPFLAGS     = DEF(GCC_AARCH64_CC_XIPFLAGS)
-DEFINE GCC48_ARM_DLINK_FLAGS         = DEF(GCC_ARM_DLINK_FLAGS) -Wl,--oformat=elf32-littlearm
-DEFINE GCC48_ARM_DLINK2_FLAGS        = DEF(GCC_DLINK2_FLAGS_COMMON) -Wl,--defsym=PECOFF_HEADER_SIZE=0x220
 DEFINE GCC48_AARCH64_DLINK_FLAGS     = DEF(GCC_AARCH64_DLINK_FLAGS)
 DEFINE GCC48_AARCH64_DLINK2_FLAGS    = DEF(GCC_DLINK2_FLAGS_COMMON) -Wl,--defsym=PECOFF_HEADER_SIZE=0x228
-DEFINE GCC48_ARM_ASLDLINK_FLAGS      = DEF(GCC_ARM_ASLDLINK_FLAGS) -Wl,--oformat=elf32-littlearm
 DEFINE GCC48_AARCH64_ASLDLINK_FLAGS  = DEF(GCC_AARCH64_ASLDLINK_FLAGS)
 DEFINE GCC48_ASLCC_FLAGS             = DEF(GCC_ASLCC_FLAGS)
 
@@ -4578,17 +4519,11 @@ DEFINE GCC49_IA32_DLINK2_FLAGS       = DEF(GCC48_IA32_DLINK2_FLAGS)
 DEFINE GCC49_X64_DLINK_FLAGS         = DEF(GCC49_IA32_X64_DLINK_FLAGS) -Wl,-melf_x86_64,--oformat=elf64-x86-64,-pie
 DEFINE GCC49_X64_DLINK2_FLAGS        = DEF(GCC48_X64_DLINK2_FLAGS)
 DEFINE GCC49_ASM_FLAGS               = DEF(GCC48_ASM_FLAGS)
-DEFINE GCC49_ARM_ASM_FLAGS           = DEF(GCC48_ARM_ASM_FLAGS)
 DEFINE GCC49_AARCH64_ASM_FLAGS       = DEF(GCC48_AARCH64_ASM_FLAGS)
-DEFINE GCC49_ARM_CC_FLAGS            = DEF(GCC48_ARM_CC_FLAGS)
-DEFINE GCC49_ARM_CC_XIPFLAGS         = DEF(GCC48_ARM_CC_XIPFLAGS)
 DEFINE GCC49_AARCH64_CC_FLAGS        = $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) DEF(GCC48_ALL_CC_FLAGS) DEF(GCC_AARCH64_CC_FLAGS) -mcmodel=small
 DEFINE GCC49_AARCH64_CC_XIPFLAGS     = DEF(GCC48_AARCH64_CC_XIPFLAGS)
-DEFINE GCC49_ARM_DLINK_FLAGS         = DEF(GCC48_ARM_DLINK_FLAGS)
-DEFINE GCC49_ARM_DLINK2_FLAGS        = DEF(GCC48_ARM_DLINK2_FLAGS)
 DEFINE GCC49_AARCH64_DLINK_FLAGS     = DEF(GCC48_AARCH64_DLINK_FLAGS) -z common-page-size=0x1000
 DEFINE GCC49_AARCH64_DLINK2_FLAGS    = DEF(GCC48_AARCH64_DLINK2_FLAGS)
-DEFINE GCC49_ARM_ASLDLINK_FLAGS      = DEF(GCC48_ARM_ASLDLINK_FLAGS)
 DEFINE GCC49_AARCH64_ASLDLINK_FLAGS  = DEF(GCC48_AARCH64_ASLDLINK_FLAGS)
 DEFINE GCC49_ASLCC_FLAGS             = DEF(GCC48_ASLCC_FLAGS)
 
@@ -4601,17 +4536,11 @@ DEFINE GCC5_IA32_DLINK2_FLAGS        = DEF(GCC49_IA32_DLINK2_FLAGS) -Wno-error
 DEFINE GCC5_X64_DLINK_FLAGS          = DEF(GCC49_X64_DLINK_FLAGS)
 DEFINE GCC5_X64_DLINK2_FLAGS         = DEF(GCC49_X64_DLINK2_FLAGS) -Wno-error
 DEFINE GCC5_ASM_FLAGS                = DEF(GCC49_ASM_FLAGS)
-DEFINE GCC5_ARM_ASM_FLAGS            = DEF(GCC49_ARM_ASM_FLAGS)
 DEFINE GCC5_AARCH64_ASM_FLAGS        = DEF(GCC49_AARCH64_ASM_FLAGS)
-DEFINE GCC5_ARM_CC_FLAGS             = DEF(GCC49_ARM_CC_FLAGS)
-DEFINE GCC5_ARM_CC_XIPFLAGS          = DEF(GCC49_ARM_CC_XIPFLAGS)
 DEFINE GCC5_AARCH64_CC_FLAGS         = DEF(GCC49_AARCH64_CC_FLAGS)
 DEFINE GCC5_AARCH64_CC_XIPFLAGS      = DEF(GCC49_AARCH64_CC_XIPFLAGS)
-DEFINE GCC5_ARM_DLINK_FLAGS          = DEF(GCC49_ARM_DLINK_FLAGS)
-DEFINE GCC5_ARM_DLINK2_FLAGS         = DEF(GCC49_ARM_DLINK2_FLAGS) -Wno-error
 DEFINE GCC5_AARCH64_DLINK_FLAGS      = DEF(GCC49_AARCH64_DLINK_FLAGS)
 DEFINE GCC5_AARCH64_DLINK2_FLAGS     = DEF(GCC49_AARCH64_DLINK2_FLAGS) -Wno-error
-DEFINE GCC5_ARM_ASLDLINK_FLAGS       = DEF(GCC49_ARM_ASLDLINK_FLAGS)
 DEFINE GCC5_AARCH64_ASLDLINK_FLAGS   = DEF(GCC49_AARCH64_ASLDLINK_FLAGS)
 DEFINE GCC5_ASLCC_FLAGS              = DEF(GCC49_ASLCC_FLAGS) -fno-lto
 
@@ -4708,39 +4637,6 @@ RELEASE_GCC48_IA32_CC_FLAGS       = DEF(GCC48_IA32_CC_FLAGS) -Os -Wno-unused-but
   DEBUG_GCC48_X64_CC_FLAGS       = DEF(GCC48_X64_CC_FLAGS) -Os
 RELEASE_GCC48_X64_CC_FLAGS       = DEF(GCC48_X64_CC_FLAGS) -Os -Wno-unused-but-set-variable
   NOOPT_GCC48_X64_CC_FLAGS       = DEF(GCC48_X64_CC_FLAGS) -O0
-
-##################
-# GCC48 ARM definitions
-##################
-*_GCC48_ARM_CC_PATH              = ENV(GCC48_ARM_PREFIX)gcc
-*_GCC48_ARM_SLINK_PATH           = ENV(GCC48_ARM_PREFIX)ar
-*_GCC48_ARM_DLINK_PATH           = ENV(GCC48_ARM_PREFIX)gcc
-*_GCC48_ARM_ASLDLINK_PATH        = ENV(GCC48_ARM_PREFIX)gcc
-*_GCC48_ARM_ASM_PATH             = ENV(GCC48_ARM_PREFIX)gcc
-*_GCC48_ARM_PP_PATH              = ENV(GCC48_ARM_PREFIX)gcc
-*_GCC48_ARM_VFRPP_PATH           = ENV(GCC48_ARM_PREFIX)gcc
-*_GCC48_ARM_ASLCC_PATH           = ENV(GCC48_ARM_PREFIX)gcc
-*_GCC48_ARM_ASLPP_PATH           = ENV(GCC48_ARM_PREFIX)gcc
-*_GCC48_ARM_RC_PATH              = ENV(GCC48_ARM_PREFIX)objcopy
-
-*_GCC48_ARM_ARCHCC_FLAGS         = -mthumb
-*_GCC48_ARM_PLATFORM_FLAGS       = -march=armv7-a
-
-*_GCC48_ARM_ASLCC_FLAGS          = DEF(GCC48_ASLCC_FLAGS)
-*_GCC48_ARM_ASLDLINK_FLAGS       = DEF(GCC48_ARM_ASLDLINK_FLAGS)
-*_GCC48_ARM_ASM_FLAGS            = DEF(GCC48_ARM_ASM_FLAGS)
-*_GCC48_ARM_DLINK_FLAGS          = DEF(GCC48_ARM_DLINK_FLAGS)
-*_GCC48_ARM_DLINK2_FLAGS         = DEF(GCC48_ARM_DLINK2_FLAGS)
-*_GCC48_ARM_DTCPP_FLAGS          = DEF(GCC_DTCPP_FLAGS)
-*_GCC48_ARM_PLATFORM_FLAGS       = -march=armv7-a
-*_GCC48_ARM_PP_FLAGS             = $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) DEF(GCC_PP_FLAGS)
-*_GCC48_ARM_RC_FLAGS             = DEF(GCC_ARM_RC_FLAGS)
-*_GCC48_ARM_VFRPP_FLAGS          = $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) DEF(GCC_VFRPP_FLAGS)
-*_GCC48_ARM_CC_XIPFLAGS          = DEF(GCC48_ARM_CC_XIPFLAGS)
-
-  DEBUG_GCC48_ARM_CC_FLAGS       = DEF(GCC48_ARM_CC_FLAGS) -O0
-RELEASE_GCC48_ARM_CC_FLAGS       = DEF(GCC48_ARM_CC_FLAGS) -Wno-unused-but-set-variable
-  NOOPT_GCC48_ARM_CC_FLAGS       = DEF(GCC48_ARM_CC_FLAGS) -O0
 
 ##################
 # GCC48 AARCH64 definitions
@@ -4848,39 +4744,6 @@ RELEASE_GCC49_IA32_CC_FLAGS       = DEF(GCC49_IA32_CC_FLAGS) -Os -Wno-unused-but
   DEBUG_GCC49_X64_CC_FLAGS       = DEF(GCC49_X64_CC_FLAGS) -Os
 RELEASE_GCC49_X64_CC_FLAGS       = DEF(GCC49_X64_CC_FLAGS) -Os -Wno-unused-but-set-variable -Wno-unused-const-variable
   NOOPT_GCC49_X64_CC_FLAGS       = DEF(GCC49_X64_CC_FLAGS) -O0
-
-##################
-# GCC49 ARM definitions
-##################
-*_GCC49_ARM_CC_PATH              = ENV(GCC49_ARM_PREFIX)gcc
-*_GCC49_ARM_SLINK_PATH           = ENV(GCC49_ARM_PREFIX)ar
-*_GCC49_ARM_DLINK_PATH           = ENV(GCC49_ARM_PREFIX)gcc
-*_GCC49_ARM_ASLDLINK_PATH        = ENV(GCC49_ARM_PREFIX)gcc
-*_GCC49_ARM_ASM_PATH             = ENV(GCC49_ARM_PREFIX)gcc
-*_GCC49_ARM_PP_PATH              = ENV(GCC49_ARM_PREFIX)gcc
-*_GCC49_ARM_VFRPP_PATH           = ENV(GCC49_ARM_PREFIX)gcc
-*_GCC49_ARM_ASLCC_PATH           = ENV(GCC49_ARM_PREFIX)gcc
-*_GCC49_ARM_ASLPP_PATH           = ENV(GCC49_ARM_PREFIX)gcc
-*_GCC49_ARM_RC_PATH              = ENV(GCC49_ARM_PREFIX)objcopy
-
-*_GCC49_ARM_ARCHCC_FLAGS         = -mthumb
-*_GCC49_ARM_PLATFORM_FLAGS       = -march=armv7-a
-
-*_GCC49_ARM_ASLCC_FLAGS          = DEF(GCC49_ASLCC_FLAGS)
-*_GCC49_ARM_ASLDLINK_FLAGS       = DEF(GCC49_ARM_ASLDLINK_FLAGS)
-*_GCC49_ARM_ASM_FLAGS            = DEF(GCC49_ARM_ASM_FLAGS)
-*_GCC49_ARM_DLINK_FLAGS          = DEF(GCC49_ARM_DLINK_FLAGS)
-*_GCC49_ARM_DLINK2_FLAGS         = DEF(GCC49_ARM_DLINK2_FLAGS)
-*_GCC49_ARM_DTCPP_FLAGS          = DEF(GCC_DTCPP_FLAGS)
-*_GCC49_ARM_PLATFORM_FLAGS       = -march=armv7-a
-*_GCC49_ARM_PP_FLAGS             = $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) DEF(GCC_PP_FLAGS)
-*_GCC49_ARM_RC_FLAGS             = DEF(GCC_ARM_RC_FLAGS)
-*_GCC49_ARM_VFRPP_FLAGS          = $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) DEF(GCC_VFRPP_FLAGS)
-*_GCC49_ARM_CC_XIPFLAGS          = DEF(GCC49_ARM_CC_XIPFLAGS)
-
-  DEBUG_GCC49_ARM_CC_FLAGS       = DEF(GCC49_ARM_CC_FLAGS) -O0
-RELEASE_GCC49_ARM_CC_FLAGS       = DEF(GCC49_ARM_CC_FLAGS) -Wno-unused-but-set-variable -Wno-unused-const-variable
-  NOOPT_GCC49_ARM_CC_FLAGS       = DEF(GCC49_ARM_CC_FLAGS) -O0
 
 ##################
 # GCC49 AARCH64 definitions
@@ -5005,41 +4868,6 @@ RELEASE_GCC5_X64_DLINK_FLAGS     = DEF(GCC5_X64_DLINK_FLAGS) -flto -Os
   NOOPT_GCC5_X64_DLINK_FLAGS     = DEF(GCC5_X64_DLINK_FLAGS) -O0
 
 ##################
-# GCC5 ARM definitions
-##################
-*_GCC5_ARM_CC_PATH               = ENV(GCC5_ARM_PREFIX)gcc
-*_GCC5_ARM_SLINK_PATH            = ENV(GCC5_ARM_PREFIX)gcc-ar
-*_GCC5_ARM_DLINK_PATH            = ENV(GCC5_ARM_PREFIX)gcc
-*_GCC5_ARM_ASLDLINK_PATH         = ENV(GCC5_ARM_PREFIX)gcc
-*_GCC5_ARM_ASM_PATH              = ENV(GCC5_ARM_PREFIX)gcc
-*_GCC5_ARM_PP_PATH               = ENV(GCC5_ARM_PREFIX)gcc
-*_GCC5_ARM_VFRPP_PATH            = ENV(GCC5_ARM_PREFIX)gcc
-*_GCC5_ARM_ASLCC_PATH            = ENV(GCC5_ARM_PREFIX)gcc
-*_GCC5_ARM_ASLPP_PATH            = ENV(GCC5_ARM_PREFIX)gcc
-*_GCC5_ARM_RC_PATH               = ENV(GCC5_ARM_PREFIX)objcopy
-
-*_GCC5_ARM_ARCHCC_FLAGS          = -mthumb
-*_GCC5_ARM_ASLCC_FLAGS           = DEF(GCC5_ASLCC_FLAGS)
-*_GCC5_ARM_ASLDLINK_FLAGS        = DEF(GCC5_ARM_ASLDLINK_FLAGS)
-*_GCC5_ARM_ASM_FLAGS             = DEF(GCC5_ARM_ASM_FLAGS)
-*_GCC5_ARM_DLINK2_FLAGS          = DEF(GCC5_ARM_DLINK2_FLAGS)
-*_GCC5_ARM_DTCPP_FLAGS           = DEF(GCC_DTCPP_FLAGS)
-*_GCC5_ARM_PLATFORM_FLAGS        = -march=armv7-a
-*_GCC5_ARM_PP_FLAGS              = $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) DEF(GCC_PP_FLAGS)
-*_GCC5_ARM_RC_FLAGS              = DEF(GCC_ARM_RC_FLAGS)
-*_GCC5_ARM_VFRPP_FLAGS           = $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) DEF(GCC_VFRPP_FLAGS)
-*_GCC5_ARM_CC_XIPFLAGS           = DEF(GCC5_ARM_CC_XIPFLAGS)
-
-  DEBUG_GCC5_ARM_CC_FLAGS        = DEF(GCC5_ARM_CC_FLAGS) -flto -Wno-unused-but-set-variable -Wno-unused-const-variable
-  DEBUG_GCC5_ARM_DLINK_FLAGS     = DEF(GCC5_ARM_DLINK_FLAGS) -flto -Os -L$(WORKSPACE)/ArmPkg/Library/GccLto -llto-arm -Wl,-plugin-opt=-pass-through=-llto-arm
-
-RELEASE_GCC5_ARM_CC_FLAGS        = DEF(GCC5_ARM_CC_FLAGS) -flto -Wno-unused-but-set-variable -Wno-unused-const-variable
-RELEASE_GCC5_ARM_DLINK_FLAGS     = DEF(GCC5_ARM_DLINK_FLAGS) -flto -Os -L$(WORKSPACE)/ArmPkg/Library/GccLto -llto-arm -Wl,-plugin-opt=-pass-through=-llto-arm
-
-  NOOPT_GCC5_ARM_CC_FLAGS        = DEF(GCC5_ARM_CC_FLAGS) -O0
-  NOOPT_GCC5_ARM_DLINK_FLAGS     = DEF(GCC5_ARM_DLINK_FLAGS) -O0
-
-##################
 # GCC5 AARCH64 definitions
 ##################
 *_GCC5_AARCH64_CC_PATH           = ENV(GCC5_AARCH64_PREFIX)gcc
@@ -5139,34 +4967,10 @@ RELEASE_GCC5_AARCH64_DLINK_XIPFLAGS = -z common-page-size=0x20
 *_CLANG35_*_ASLDLINK_PATH        = ENV(CLANG35_BIN)clang
 *_CLANG35_*_DEPS_FLAGS           = DEF(GCC_DEPS_FLAGS)
 
-DEFINE CLANG35_ARM_TARGET        = -target arm-linux-gnueabi
 DEFINE CLANG35_AARCH64_TARGET    = -target aarch64-linux-gnu
 
 DEFINE CLANG35_WARNING_OVERRIDES = -Wno-parentheses-equality -Wno-tautological-compare -Wno-tautological-constant-out-of-range-compare -Wno-empty-body -Wno-unknown-warning-option -Wno-unused-but-set-variable -Wno-unused-const-variable
-DEFINE CLANG35_ARM_CC_FLAGS      = DEF(GCC_ARM_CC_FLAGS) DEF(CLANG35_ARM_TARGET) DEF(CLANG35_WARNING_OVERRIDES)
 DEFINE CLANG35_AARCH64_CC_FLAGS  = DEF(GCC_AARCH64_CC_FLAGS) DEF(CLANG35_AARCH64_TARGET) -mcmodel=small DEF(CLANG35_WARNING_OVERRIDES)
-
-##################
-# CLANG35 ARM definitions
-##################
-*_CLANG35_ARM_SLINK_PATH         = ENV(CLANG35_ARM_PREFIX)ar
-*_CLANG35_ARM_RC_PATH            = ENV(CLANG35_ARM_PREFIX)objcopy
-
-*_CLANG35_ARM_ASLCC_FLAGS        = DEF(GCC_ASLCC_FLAGS)
-*_CLANG35_ARM_ASLDLINK_FLAGS     = DEF(CLANG35_ARM_TARGET) DEF(GCC_ARM_ASLDLINK_FLAGS)
-*_CLANG35_ARM_ASM_FLAGS          = DEF(GCC_ASM_FLAGS) DEF(CLANG35_ARM_TARGET) $(ARCHASM_FLAGS) $(PLATFORM_FLAGS) -Qunused-arguments
-*_CLANG35_ARM_DLINK_FLAGS        = DEF(CLANG35_ARM_TARGET) DEF(GCC_ARM_DLINK_FLAGS)
-*_CLANG35_ARM_DLINK2_FLAGS       = DEF(GCC_DLINK2_FLAGS_COMMON) -Wl,--defsym=PECOFF_HEADER_SIZE=0x220
-*_CLANG35_ARM_PLATFORM_FLAGS     = -march=armv7-a -mkernel -Qunused-arguments
-*_CLANG35_ARM_PP_FLAGS           = DEF(GCC_PP_FLAGS) DEF(CLANG35_ARM_TARGET) $(ARCHCC_FLAGS) $(PLATFORM_FLAGS)
-*_CLANG35_ARM_RC_FLAGS           = DEF(GCC_ARM_RC_FLAGS)
-*_CLANG35_ARM_VFRPP_FLAGS        = DEF(GCC_VFRPP_FLAGS) DEF(CLANG35_ARM_TARGET) $(ARCHCC_FLAGS) $(PLATFORM_FLAGS)
-*_CLANG35_ARM_ASLPP_FLAGS        = DEF(GCC_ASLPP_FLAGS) DEF(CLANG35_ARM_TARGET)
-*_CLANG35_ARM_CC_XIPFLAGS        = DEF(GCC_ARM_CC_XIPFLAGS)
-
-  DEBUG_CLANG35_ARM_CC_FLAGS     = DEF(CLANG35_ARM_CC_FLAGS) $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) -O1
-RELEASE_CLANG35_ARM_CC_FLAGS     = DEF(CLANG35_ARM_CC_FLAGS) $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) -Oz
-  NOOPT_CLANG35_ARM_CC_FLAGS     = DEF(CLANG35_ARM_CC_FLAGS) $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) -O0
 
 ##################
 # CLANG35 AARCH64 definitions
@@ -5288,50 +5092,6 @@ RELEASE_CLANG38_X64_DLINK2_FLAGS   = DEF(GCC5_X64_DLINK2_FLAGS) -O3
 NOOPT_CLANG38_X64_CC_FLAGS         = DEF(CLANG38_ALL_CC_FLAGS) -m64 "-DEFIAPI=__attribute__((ms_abi))" -mno-red-zone -mcmodel=small -fpie -O0 DEF(CLANG38_X64_TARGET) -g
 NOOPT_CLANG38_X64_DLINK_FLAGS      = DEF(GCC5_IA32_X64_DLINK_FLAGS) -Wl,-O0 -Wl,-melf_x86_64 -Wl,--oformat=elf64-x86-64 -Wl,-pie -mcmodel=small
 NOOPT_CLANG38_X64_DLINK2_FLAGS     = DEF(GCC5_X64_DLINK2_FLAGS) -O0
-
-##################
-# CLANG38 ARM definitions
-##################
-DEFINE CLANG38_ARM_TARGET        = -target arm-linux-gnueabi
-DEFINE CLANG38_ARM_CC_FLAGS      = DEF(GCC_ARM_CC_FLAGS) DEF(CLANG38_ARM_TARGET) DEF(CLANG38_WARNING_OVERRIDES) -mno-movt
-DEFINE CLANG38_ARM_DLINK_FLAGS   = DEF(CLANG38_ARM_TARGET) DEF(GCC_ARM_DLINK_FLAGS)
-
-*_CLANG38_ARM_PP_FLAGS           = DEF(GCC_PP_FLAGS)
-*_CLANG38_ARM_ASLCC_FLAGS        = DEF(GCC_ASLCC_FLAGS)
-*_CLANG38_ARM_APP_FLAGS          =
-*_CLANG38_ARM_ASL_FLAGS          = DEF(IASL_FLAGS)
-*_CLANG38_ARM_ASL_OUTFLAGS       = DEF(IASL_OUTFLAGS)
-*_CLANG38_ARM_DTCPP_FLAGS        = DEF(GCC_DTCPP_FLAGS)
-
-*_CLANG38_ARM_CC_PATH            = ENV(CLANG38_BIN)clang
-*_CLANG38_ARM_ASM_PATH           = ENV(CLANG38_BIN)clang
-*_CLANG38_ARM_PP_PATH            = ENV(CLANG38_BIN)clang
-*_CLANG38_ARM_VFRPP_PATH         = ENV(CLANG38_BIN)clang
-*_CLANG38_ARM_ASLCC_PATH         = ENV(CLANG38_BIN)clang
-*_CLANG38_ARM_ASLPP_PATH         = ENV(CLANG38_BIN)clang
-*_CLANG38_ARM_DLINK_PATH         = ENV(CLANG38_BIN)clang
-*_CLANG38_ARM_ASLDLINK_PATH      = ENV(CLANG38_BIN)clang
-
-*_CLANG38_ARM_SLINK_PATH         = ENV(CLANG38_BIN)llvm-ar
-*_CLANG38_ARM_RC_PATH            = ENV(CLANG38_ARM_PREFIX)objcopy
-
-*_CLANG38_ARM_ASLCC_FLAGS        = DEF(GCC_ASLCC_FLAGS) -fno-lto
-*_CLANG38_ARM_ASLDLINK_FLAGS     = DEF(CLANG38_ARM_TARGET) DEF(GCC_ARM_ASLDLINK_FLAGS)
-*_CLANG38_ARM_ASM_FLAGS          = DEF(GCC_ASM_FLAGS) DEF(CLANG38_ARM_TARGET) $(ARCHASM_FLAGS) $(PLATFORM_FLAGS) -Qunused-arguments
-*_CLANG38_ARM_DLINK2_FLAGS       = DEF(GCC_DLINK2_FLAGS_COMMON) -Wl,--defsym=PECOFF_HEADER_SIZE=0x220
-*_CLANG38_ARM_PLATFORM_FLAGS     = -march=armv7-a
-*_CLANG38_ARM_PP_FLAGS           = DEF(GCC_PP_FLAGS) DEF(CLANG38_ARM_TARGET) $(ARCHCC_FLAGS) $(PLATFORM_FLAGS)
-*_CLANG38_ARM_RC_FLAGS           = DEF(GCC_ARM_RC_FLAGS)
-*_CLANG38_ARM_VFRPP_FLAGS        = DEF(GCC_VFRPP_FLAGS) DEF(CLANG38_ARM_TARGET) $(ARCHCC_FLAGS) $(PLATFORM_FLAGS)
-*_CLANG38_ARM_ASLPP_FLAGS        = DEF(GCC_ASLPP_FLAGS) DEF(CLANG38_ARM_TARGET)
-*_CLANG38_ARM_CC_XIPFLAGS        = DEF(GCC_ARM_CC_XIPFLAGS)
-
-  DEBUG_CLANG38_ARM_CC_FLAGS     = DEF(CLANG38_ARM_CC_FLAGS) $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) -flto -O1
-  DEBUG_CLANG38_ARM_DLINK_FLAGS  = DEF(CLANG38_ARM_DLINK_FLAGS) -flto -Wl,-O1 -L$(WORKSPACE)/ArmPkg/Library/GccLto -llto-arm -Wl,-plugin-opt=-pass-through=-llto-arm
-  NOOPT_CLANG38_ARM_CC_FLAGS     = DEF(CLANG38_ARM_CC_FLAGS) $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) -O0
-  NOOPT_CLANG38_ARM_DLINK_FLAGS  = DEF(CLANG38_ARM_DLINK_FLAGS)
-RELEASE_CLANG38_ARM_CC_FLAGS     = DEF(CLANG38_ARM_CC_FLAGS) $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) -flto -O3
-RELEASE_CLANG38_ARM_DLINK_FLAGS  = DEF(CLANG38_ARM_DLINK_FLAGS) -flto -Wl,-O3 -L$(WORKSPACE)/ArmPkg/Library/GccLto -llto-arm -Wl,-plugin-opt=-pass-through=-llto-arm
 
 ##################
 # CLANG38 AARCH64 definitions
@@ -7317,144 +7077,6 @@ RELEASE_XCODE5_X64_ASM_FLAGS  = -arch x86_64
   DEBUG_XCODE5_X64_CC_FLAGS   = -target x86_64-pc-win32-macho -c -g -Os       -Wall -Werror -Wextra -include AutoGen.h -funsigned-char -fno-ms-extensions -fno-stack-protector -fno-builtin -fshort-wchar -mno-implicit-float -mms-bitfields -Wno-unused-parameter -Wno-missing-braces -Wno-missing-field-initializers -Wno-tautological-compare -Wno-sign-compare -Wno-varargs -ftrap-function=undefined_behavior_has_been_optimized_away_by_clang -D NO_MSABI_VA_FUNCS $(PLATFORM_FLAGS)
   NOOPT_XCODE5_X64_CC_FLAGS   = -target x86_64-pc-win32-macho -c -g -O0       -Wall -Werror -Wextra -include AutoGen.h -funsigned-char -fno-ms-extensions -fno-stack-protector -fno-builtin -fshort-wchar -mno-implicit-float -mms-bitfields -Wno-unused-parameter -Wno-missing-braces -Wno-missing-field-initializers -Wno-tautological-compare -Wno-sign-compare -Wno-varargs -ftrap-function=undefined_behavior_has_been_optimized_away_by_clang -D NO_MSABI_VA_FUNCS $(PLATFORM_FLAGS)
 RELEASE_XCODE5_X64_CC_FLAGS   = -target x86_64-pc-win32-macho -c    -Os       -Wall -Werror -Wextra -include AutoGen.h -funsigned-char -fno-ms-extensions -fno-stack-protector -fno-builtin -fshort-wchar -mno-implicit-float -mms-bitfields -Wno-unused-parameter -Wno-missing-braces -Wno-missing-field-initializers -Wno-tautological-compare -Wno-sign-compare -Wno-varargs -Wno-unused-const-variable -ftrap-function=undefined_behavior_has_been_optimized_away_by_clang -D NO_MSABI_VA_FUNCS $(PLATFORM_FLAGS)
-
-####################################################################################
-#
-# RVCT Common
-#
-####################################################################################
-
-DEFINE RVCT_ALL_ASM_FLAGS   = --diag_suppress=1786 --diag_error=warning --apcs /interwork
-DEFINE RVCT_ALL_CC_FLAGS    = --c90 --no_autoinline --asm --gnu --apcs /interwork --signed_chars --no_unaligned_access --split_sections --enum_is_int --preinclude AutoGen.h --diag_suppress=186,188,1,111,68 --diag_warning 167 --diag_error=warning --diag_style=ide --protect_stack
-DEFINE RVCT_ALL_DLINK_FLAGS = --no_scanlib --no_exceptions --datacompressor off --strict --symbols --diag_style=ide --no_legacyalign --scatter $(EDK_TOOLS_PATH)/Scripts/Rvct-Align32.sct
-
-####################################################################################
-#
-# ARM RealView Tools - Windows
-#
-####################################################################################
-#   RVCT         - Tools from ARM
-
-*_RVCT_*_*_FAMILY          = RVCT
-
-#
-# Use default values, or override in DSC file
-#
-*_RVCT_ARM_ARCHCC_FLAGS    = --thumb --fpu=softvfp
-*_RVCT_ARM_ARCHASM_FLAGS   =
-*_RVCT_ARM_ARCHDLINK_FLAGS =
-*_RVCT_ARM_PLATFORM_FLAGS  = --cpu 7-A
-
-  DEBUG_RVCT_ARM_DLINK_FLAGS     = $(ARCHDLINK_FLAGS) DEF(RVCT_ALL_DLINK_FLAGS) --entry $(IMAGE_ENTRY_POINT) --map --list $(DEST_DIR_DEBUG)/$(BASE_NAME).map
-RELEASE_RVCT_ARM_DLINK_FLAGS     = $(ARCHDLINK_FLAGS) DEF(RVCT_ALL_DLINK_FLAGS) --entry $(IMAGE_ENTRY_POINT) --map --list $(DEST_DIR_DEBUG)/$(BASE_NAME).map
-
-
-*_RVCT_ARM_ASM_FLAGS       = $(ARCHASM_FLAGS) $(PLATFORM_FLAGS) DEF(RVCT_ALL_ASM_FLAGS)
-*_RVCT_ARM_PP_FLAGS        = $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) -E --preinclude AutoGen.h
-*_RVCT_ARM_VFRPP_FLAGS     = $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) -E  -DVFRCOMPILE --preinclude $(DEST_DIR_DEBUG)/$(MODULE_NAME)StrDefs.h
-*_RVCT_ARM_MAKE_PATH       = nmake /NOLOGO
-*_RVCT_ARM_SLINK_FLAGS     = --partial -o
-  DEBUG_RVCT_ARM_CC_FLAGS  = $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) DEF(RVCT_ALL_CC_FLAGS) -O1 -g
-RELEASE_RVCT_ARM_CC_FLAGS  = $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) --diag_suppress=550 DEF(RVCT_ALL_CC_FLAGS) -O2
-
-##################
-# ARM definitions
-##################
-*_RVCT_ARM_CC_PATH         = ENV(RVCT_TOOLS_PATH)armcc
-*_RVCT_ARM_SLINK_PATH      = ENV(RVCT_TOOLS_PATH)armlink
-*_RVCT_ARM_DLINK_PATH      = ENV(RVCT_TOOLS_PATH)armlink
-*_RVCT_ARM_ASM_PATH        = ENV(RVCT_TOOLS_PATH)armasm
-*_RVCT_ARM_PP_PATH         = ENV(RVCT_TOOLS_PATH)armcc
-*_RVCT_ARM_VFRPP_PATH      = ENV(RVCT_TOOLS_PATH)armcc
-*_RVCT_ARM_FROMELF_PATH    = ENV(RVCT_TOOLS_PATH)fromelf
-
-####################################################################################
-#
-# ARM RealView Tools - Linux
-#
-####################################################################################
-#   RVCTLINUX         - Tools from ARM in a Cygwin environment
-*_RVCTLINUX_*_*_FAMILY               = RVCT
-*_RVCTLINUX_*_*_BUILDRULEFAMILY      = RVCTLINUX
-
-*_RVCTLINUX_*_MAKE_PATH       = make
-
-#
-# Use default values, or override in DSC file
-#
-*_RVCTLINUX_ARM_ARCHCC_FLAGS    = --thumb --fpu=softvfp
-*_RVCTLINUX_ARM_ARCHASM_FLAGS   =
-*_RVCTLINUX_ARM_ARCHDLINK_FLAGS =
-*_RVCTLINUX_ARM_PLATFORM_FLAGS  = --cpu 7-A
-
-DEBUG_RVCTLINUX_ARM_DLINK_FLAGS     = $(ARCHDLINK_FLAGS) DEF(RVCT_ALL_DLINK_FLAGS) --entry $(IMAGE_ENTRY_POINT) --map --list $(DEST_DIR_DEBUG)/$(BASE_NAME).map
-RELEASE_RVCTLINUX_ARM_DLINK_FLAGS   = $(ARCHDLINK_FLAGS) DEF(RVCT_ALL_DLINK_FLAGS) --entry $(IMAGE_ENTRY_POINT) --map --list $(DEST_DIR_DEBUG)/$(BASE_NAME).map
-
-*_RVCTLINUX_ARM_ASM_FLAGS       = $(ARCHASM_FLAGS) $(PLATFORM_FLAGS) DEF(RVCT_ALL_ASM_FLAGS)
-*_RVCTLINUX_ARM_PP_FLAGS        = $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) -E
-*_RVCTLINUX_ARM_VFRPP_FLAGS     = $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) -E  -DVFRCOMPILE --preinclude $(DEST_DIR_DEBUG)/$(MODULE_NAME)StrDefs.h
-*_RVCTLINUX_ARM_SLINK_FLAGS     = --partial -o
-  DEBUG_RVCTLINUX_ARM_CC_FLAGS  = $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) DEF(RVCT_ALL_CC_FLAGS) -O1 -g
-RELEASE_RVCTLINUX_ARM_CC_FLAGS  = $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) --diag_suppress=550 DEF(RVCT_ALL_CC_FLAGS) -O2
-
-##################
-# ARM definitions
-##################
-*_RVCTLINUX_ARM_CC_PATH         = ENV(RVCT_TOOLS_PATH)armcc
-*_RVCTLINUX_ARM_SLINK_PATH      = ENV(RVCT_TOOLS_PATH)armlink
-*_RVCTLINUX_ARM_DLINK_PATH      = ENV(RVCT_TOOLS_PATH)armlink
-*_RVCTLINUX_ARM_ASM_PATH        = ENV(RVCT_TOOLS_PATH)armasm
-*_RVCTLINUX_ARM_PP_PATH         = ENV(RVCT_TOOLS_PATH)armcc
-*_RVCTLINUX_ARM_VFRPP_PATH      = ENV(RVCT_TOOLS_PATH)armcc
-*_RVCTLINUX_ARM_FROMELF_PATH    = ENV(RVCT_TOOLS_PATH)fromelf
-
-####################################################################################
-#
-# ARM RealView Tools - Cygwin
-#
-####################################################################################
-#   ARMCYGWIN         - Tools from ARM in a Cygwin environment
-
-*_RVCTCYGWIN_*_*_FAMILY               = RVCT
-*_RVCTCYGWIN_*_*_BUILDRULEFAMILY      = RVCTCYGWIN
-
-*_RVCTCYGWIN_ARM_CCPATH_FLAG         = ENV(RVCT_TOOLS_PATH)armcc
-*_RVCTCYGWIN_ARM_SLINKPATH_FLAG      = ENV(RVCT_TOOLS_PATH)armlink
-*_RVCTCYGWIN_ARM_DLINKPATH_FLAG      = ENV(RVCT_TOOLS_PATH)armlink
-*_RVCTCYGWIN_ARM_ASMPATH_FLAG        = ENV(RVCT_TOOLS_PATH)armasm
-*_RVCTCYGWIN_ARM_PPPATH_FLAG         = ENV(RVCT_TOOLS_PATH)armcc
-*_RVCTCYGWIN_ARM_VFRPPPATH_FLAG      = ENV(RVCT_TOOLS_PATH)armcc
-*_RVCTCYGWIN_ARM_FROMELFPATH_FLAG    = ENV(RVCT_TOOLS_PATH)fromelf
-
-#
-# Use default values, or override in DSC file
-#
-*_RVCTCYGWIN_ARM_ARCHCC_FLAGS    = --thumb --fpu=softvfp
-*_RVCTCYGWIN_ARM_ARCHASM_FLAGS   =
-*_RVCTCYGWIN_ARM_ARCHDLINK_FLAGS =
-*_RVCTCYGWIN_ARM_PLATFORM_FLAGS  = --cpu 7-A
-
-  DEBUG_RVCTCYGWIN_ARM_DLINK_FLAGS     = "$(DLINKPATH_FLAG)" $(ARCHDLINK_FLAGS) DEF(RVCT_ALL_DLINK_FLAGS) --entry $(IMAGE_ENTRY_POINT) --map --list `cygpath -m $(DEST_DIR_DEBUG)/$(BASE_NAME).map`
-RELEASE_RVCTCYGWIN_ARM_DLINK_FLAGS     = "$(DLINKPATH_FLAG)" $(ARCHDLINK_FLAGS) DEF(RVCT_ALL_DLINK_FLAGS) --entry $(IMAGE_ENTRY_POINT) --map --list `cygpath -m $(DEST_DIR_DEBUG)/$(BASE_NAME).map`
-
-*_RVCTCYGWIN_ARM_ASM_FLAGS       = "$(ASMPATH_FLAG)" $(ARCHASM_FLAGS) $(PLATFORM_FLAGS) DEF(RVCT_ALL_ASM_FLAGS)
-*_RVCTCYGWIN_ARM_PP_FLAGS        = "$(CCPATH_FLAG)" $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) -E
-*_RVCTCYGWIN_ARM_VFRPP_FLAGS     = "$(CCPATH_FLAG)" $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) -E  -DVFRCOMPILE --preinclude `cygpath -m $(DEST_DIR_DEBUG)/$(MODULE_NAME)StrDefs.h`
-*_RVCTCYGWIN_ARM_MAKE_PATH       = make
-*_RVCTCYGWIN_ARM_SLINK_FLAGS     = "$(SLINKPATH_FLAG)" --partial -o
-  DEBUG_RVCTCYGWIN_ARM_CC_FLAGS  = "$(CCPATH_FLAG)" $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) DEF(RVCT_ALL_CC_FLAGS) -O1 -g
-RELEASE_RVCTCYGWIN_ARM_CC_FLAGS  = "$(CCPATH_FLAG)" $(ARCHCC_FLAGS) $(PLATFORM_FLAGS) --diag_suppress=550 DEF(RVCT_ALL_CC_FLAGS) -O2
-
-##################
-# ARM definitions
-##################
-*_RVCTCYGWIN_ARM_CC_PATH         = ENV(WORKSPACE)/BaseTools/Bin/CYGWIN_NT-5.1-i686/armcc_wrapper.py
-*_RVCTCYGWIN_ARM_SLINK_PATH      = ENV(WORKSPACE)/BaseTools/Bin/CYGWIN_NT-5.1-i686/armcc_wrapper.py
-*_RVCTCYGWIN_ARM_DLINK_PATH      = ENV(WORKSPACE)/BaseTools/Bin/CYGWIN_NT-5.1-i686/armcc_wrapper.py
-*_RVCTCYGWIN_ARM_ASM_PATH        = ENV(WORKSPACE)/BaseTools/Bin/CYGWIN_NT-5.1-i686/armcc_wrapper.py
-*_RVCTCYGWIN_ARM_PP_PATH         = ENV(WORKSPACE)/BaseTools/Bin/CYGWIN_NT-5.1-i686/armcc_wrapper.py
-*_RVCTCYGWIN_ARM_VFRPP_PATH      = ENV(WORKSPACE)/BaseTools/Bin/CYGWIN_NT-5.1-i686/armcc_wrapper.py
-*_RVCTCYGWIN_ARM_FROMELF_PATH    = ENV(WORKSPACE)/BaseTools/Bin/CYGWIN_NT-5.1-i686/armcc_wrapper.py
 
 #################
 # ASM 16 linker defintions

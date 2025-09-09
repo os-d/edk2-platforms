@@ -136,7 +136,7 @@
     <Command.XCODE>
         "$(CC)" $(DEPS_FLAGS) $(CC_FLAGS) -o ${dst} $(INC) ${src}
 
-[C-Code-File.BASE.AARCH64,C-Code-File.SEC.AARCH64,C-Code-File.PEI_CORE.AARCH64,C-Code-File.PEIM.AARCH64,C-Code-File.BASE.ARM,C-Code-File.SEC.ARM,C-Code-File.PEI_CORE.ARM,C-Code-File.PEIM.ARM]
+[C-Code-File.BASE.AARCH64,C-Code-File.SEC.AARCH64,C-Code-File.PEI_CORE.AARCH64,C-Code-File.PEIM.AARCH64]
     <InputFile>
         ?.c
 
@@ -182,7 +182,7 @@
         Trim --trim-long --source-code -o ${d_path}(+)${s_base}.iiii ${d_path}(+)${s_base}.ii
         "$(ASM)" $(ASM_FLAGS) -o ${dst} $(INC) ${d_path}(+)${s_base}.iiii
 
-[Assembly-Code-File.COMMON.ARM,Assembly-Code-File.COMMON.AARCH64]
+[Assembly-Code-File.COMMON.AARCH64]
     # Remove --convert-hex for ARM as it breaks MSFT assemblers
     <InputFile.MSFT, InputFile.INTEL>
         ?.asm, ?.Asm, ?.ASM
@@ -303,7 +303,7 @@
         "$(DLINK)" $(DLINK_FLAGS) -o ${dst} $(DLINK_SPATH) -filelist $(STATIC_LIBRARY_FILES_LIST)  $(DLINK2_FLAGS)
 
 
-[Static-Library-File.SEC.AARCH64, Static-Library-File.PEI_CORE.AARCH64, Static-Library-File.PEIM.AARCH64,Static-Library-File.SEC.ARM, Static-Library-File.PEI_CORE.ARM, Static-Library-File.PEIM.ARM]
+[Static-Library-File.SEC.AARCH64, Static-Library-File.PEI_CORE.AARCH64, Static-Library-File.PEIM.AARCH64]
     <InputFile>
         *.lib
 
